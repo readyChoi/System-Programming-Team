@@ -9,11 +9,8 @@
  login 기능 구현 - /etc/passwd 양식 참고/etc/passwd 양식 참고함
  https://reakwon.tistory.com/137  
  
-
 <ID>:<터미널번호> 형태로 저장, ID 25자 제한
 프로그램 켜서 로그인, 자기 아이디 입력하면 -> 접속한 터미널 번호, 아이디 저장
-
-txt 파일: vscode, vi로 직접 만드는 건 ㄱㅊ, touch나 creat으로 생성 시 permission denied 오류 발생
 */
 
 int get_id();
