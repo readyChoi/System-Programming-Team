@@ -5,9 +5,12 @@
 #include <string.h>
 #include <dirent.h>
 #include <sys/stat.h>
+#include <sys/types.h>
 #include <fcntl.h>
 #include <pthread.h>
 #include <time.h>
+#include <ncurses.h>
+#include <sys/wait.h>
 
 struct ThreadArgs {
     char* arg1;
@@ -166,10 +169,15 @@ void* alarm_check(void* arg){
     int fd;
     int file;
     char* token;
+    char* login_token;
     int line_count;
     const int target_line_number = 2;
-     const char* new_line_content = "1";
+    const char* new_line_content = "1";
     FILE *taskFile = NULL;
+    FILE *loginFile = NULL;
+    int login_check = 0;
+    char username[30];
+    char terminal_name[30];
 
     while(1){
         printf("%s\n", dir_path);
@@ -218,7 +226,38 @@ void* alarm_check(void* arg){
                         while (token != NULL) {
                             printf("Token: %s\n", token);
 
+                            if((loginFile = fopen("./login.txt", "r")) == NULL){
+                                printf("error\n");
+                            }
+                            if((taskFile = fopen(filepath, "r")) == NULL)
+                            {
+                                perror("cannot open file");
+                                exit(1);
+                            }
+
+                            char login_line[1000];
+                            while (fgets(login_line, sizeof(login_line), loginFile) != NULL) {
+                                if (sscanf(login_line, "%[^:]:%s", username, terminal_name) == 2) {
+                                    printf("First string: %s\n", username);
+                                    printf("Second string: %s\n", terminal_name);
+                                }
+
+                                if(strcmp(token, username) == 0){
+                                    printf("%s\n\n", terminal_name);
+                                     FILE* terminal_file = fopen(terminal_name, "w");
+                                     fprintf(terminal_file, "\033[?5h");
+                                     char message[100] = "\n";
+                                     strcat(message, filelist->d_name);
+                                     strcat(message, " alarm occurs\n");
+                                     fprintf(terminal_file, "%s", message);
+                                     fflush(terminal_file);
+                                     fprintf(terminal_file, "\033[?5l");
+                                     fclose(terminal_file);
+                                }
+                            }
+
                             // signal 보내야함
+                            // signal(token, filelist->d_name);
                             token = strtok(NULL, " ");
                         }
                         token = NULL;
@@ -230,8 +269,6 @@ void* alarm_check(void* arg){
                         FILE* file = fopen(filepath, "r+");
                         char line[1000];
                         int current_line = 1;
-
-                        printf("hello\n");
 
                         while (fgets(line, sizeof(line), file) != NULL) {
                             if (current_line == target_line_number) {
