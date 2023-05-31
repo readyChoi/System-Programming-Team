@@ -14,7 +14,6 @@ typedef struct {
         char category[20];
         char schedule_check[20];
         char flag[5];
-        int temp;
     } task;
 
 task task_list[30];
