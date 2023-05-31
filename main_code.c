@@ -269,13 +269,24 @@ void createNewTaskText(int type, int year, int month, int day, int hour, char* t
 
     fclose(file);
 
-    int result = mkdir(username, 0777);
+    struct stat st;
+    if (stat(username, &st) == -1) {
+        // 디렉토리가 존재하지 않는 경우에만 생성
+        if (mkdir(username, 0777) == -1) {
+            perror("mkdir error");
+            exit(EXIT_FAILURE);
+        }
+    }
     strcpy(hardlink, username);
     strcat(hardlink, "/");
     strcat(hardlink, title);
     link(saveAdddress, hardlink);
 
     // create_link(username, saveAddress);
+}
+
+void taskToDone(char* original_path, char* next_path){
+    rename(original_path, next_path);
 }
 
 int main(){
