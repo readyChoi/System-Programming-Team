@@ -54,6 +54,150 @@ int compareCurrentTime(time_t unixTime){
     }
 }
 
+int duplication_check(char *title){
+    DIR *dir;
+    struct dirent *filelist;
+
+    char dir_path[50];
+
+    strcpy(dir_path, "./Scheduled/School");
+    
+    if((dir = opendir(dir_path)) == NULL){ // opendir
+        perror("cannot open directory");
+        exit(1);
+    }
+
+    while((filelist = readdir(dir)) != NULL){ // readdir
+        if(filelist->d_type == DT_REG){
+            if(strcmp(title, filelist->d_name) == 0){
+                return 1;
+            }
+        }
+    }
+
+    strcpy(dir_path, "./Scheduled/Friend");
+    
+    if((dir = opendir(dir_path)) == NULL){ // opendir
+        perror("cannot open directory");
+        exit(1);
+    }
+
+    while((filelist = readdir(dir)) != NULL){ // readdir
+        if(filelist->d_type == DT_REG){
+            if(strcmp(title, filelist->d_name) == 0){
+                return 1;
+            }
+        }
+    }
+
+    strcpy(dir_path, "./Scheduled/Family");
+    
+    if((dir = opendir(dir_path)) == NULL){ // opendir
+        perror("cannot open directory");
+        exit(1);
+    }
+
+    while((filelist = readdir(dir)) != NULL){ // readdir
+        if(filelist->d_type == DT_REG){
+            if(strcmp(title, filelist->d_name) == 0){
+                return 1;
+            }
+        }
+    }
+
+    strcpy(dir_path, "./Today/School");
+    
+    if((dir = opendir(dir_path)) == NULL){ // opendir
+        perror("cannot open directory");
+        exit(1);
+    }
+
+    while((filelist = readdir(dir)) != NULL){ // readdir
+        if(filelist->d_type == DT_REG){
+            if(strcmp(title, filelist->d_name) == 0){
+                return 1;
+            }
+        }
+    }
+
+    strcpy(dir_path, "./Today/Friend");
+    
+    if((dir = opendir(dir_path)) == NULL){ // opendir
+        perror("cannot open directory");
+        exit(1);
+    }
+
+    while((filelist = readdir(dir)) != NULL){ // readdir
+        if(filelist->d_type == DT_REG){
+            if(strcmp(title, filelist->d_name) == 0){
+                return 1;
+            }
+        }
+    }
+
+    strcpy(dir_path, "./Today/Family");
+    
+    if((dir = opendir(dir_path)) == NULL){ // opendir
+        perror("cannot open directory");
+        exit(1);
+    }
+
+    while((filelist = readdir(dir)) != NULL){ // readdir
+        if(filelist->d_type == DT_REG){
+            if(strcmp(title, filelist->d_name) == 0){
+                return 1;
+            }
+        }
+    }
+
+    strcpy(dir_path, "./Finished/School");
+    
+    if((dir = opendir(dir_path)) == NULL){ // opendir
+        perror("cannot open directory");
+        exit(1);
+    }
+
+    while((filelist = readdir(dir)) != NULL){ // readdir
+        if(filelist->d_type == DT_REG){
+            if(strcmp(title, filelist->d_name) == 0){
+                return 1;
+            }
+        }
+    }
+
+    strcpy(dir_path, "./Finished/Friend");
+    
+    if((dir = opendir(dir_path)) == NULL){ // opendir
+        perror("cannot open directory");
+        exit(1);
+    }
+
+    while((filelist = readdir(dir)) != NULL){ // readdir
+        if(filelist->d_type == DT_REG){
+            if(strcmp(title, filelist->d_name) == 0){
+                return 1;
+            }
+        }
+    }
+
+    strcpy(dir_path, "./Finished/Family");
+    
+    if((dir = opendir(dir_path)) == NULL){ // opendir
+        perror("cannot open directory");
+        exit(1);
+    }
+
+    while((filelist = readdir(dir)) != NULL){ // readdir
+        if(filelist->d_type == DT_REG){
+            if(strcmp(title, filelist->d_name) == 0){
+                return 1;
+            }
+        }
+    }
+
+    return 0;
+}
+
 
 
 // 새로운 task 파일 만들기
