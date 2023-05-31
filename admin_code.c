@@ -149,6 +149,8 @@ void* today_check(void* arg){
             }
         }
 
+        closedir(dir);
+
         sleep(1);
     }
 
@@ -265,6 +267,9 @@ void* alarm_check(void* arg){
                                 }
                             }
 
+                            fclose(loginFile);
+                            fclose(taskFile);
+
                             if((apiLoginFile = fopen("./api_login.txt", "r")) == NULL){
                                 printf("error\n");
                             }
@@ -308,6 +313,7 @@ void* alarm_check(void* arg){
                                     close(socket_desc);
                                 }
                             }
+                            fclose(apiLoginFile);
 
                             // signal 보내야함
                             // signal(token, filelist->d_name);
@@ -337,6 +343,7 @@ void* alarm_check(void* arg){
                 }
             }
         }
+        closedir(dir);
 
         sleep(1);
     }
