@@ -209,6 +209,7 @@ int duplication_check(char *title){
 void createNewTaskText(int type, int year, int month, int day, int hour, char* title, char* content, char* username) {
     struct tm *timeInfo;
     char saveAdddress[100];
+    char hardlink[100];
     time_t taskTime;
     int compareResult;
     taskTime = convertToUnixTime(year, month, day, hour);
@@ -261,19 +262,28 @@ void createNewTaskText(int type, int year, int month, int day, int hour, char* t
     char* flagString = "0";
     fprintf(file, "%s\n", flagString);
 
-    // 두 번째 줄에 문자열 저장
+    fprintf(file, "%s\n", username);
+
+    // 세 번째 줄에 문자열 저장
     fprintf(file, "%s", content);
 
     fclose(file);
+
+    int result = mkdir(username, 0777);
+    strcpy(hardlink, username);
+    strcat(hardlink, "/");
+    strcat(hardlink, title);
+    link(saveAdddress, hardlink);
 
     // create_link(username, saveAddress);
 }
 
 int main(){
     char* title;
-    title = "task1";
+    title = "test";
     char* content;
-    content = "test\nteststse\ntest\n";
+    content = "hiddfsffdsfds";
     char *usr_name = "choi";
-    createNewTaskText(1, 2022, 5, 20, 4, title, content, usr_name);
+
+    createNewTaskText(1, 2023, 3, 4, 10, title, content, usr_name);
 }
