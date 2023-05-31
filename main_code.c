@@ -1,6 +1,11 @@
 #include <stdio.h>
 #include <time.h>
 #include <string.h>
+#include <dirent.h>
+#include <sys/stat.h>
+#include <fcntl.h>
+#include <unistd.h>
+#include <stdlib.h>
 
 #define CUR_PATH "./"
 
