@@ -177,6 +177,7 @@ void* alarm_check(void* arg){
     const char* new_line_content = "1";
     FILE *taskFile = NULL;
     FILE *loginFile = NULL;
+    FILE *apiLoginFile = NULL;
     int login_check = 0;
     char username[30];
     char terminal_name[30];
@@ -286,7 +287,6 @@ void* alarm_check(void* arg){
                                                 (struct sockaddr *)&server,
                                                 sizeof(server)) < 0) {
                                         puts("connect error");
-                                        return 1;
                                     }
                                     printf("Connected\n");
 
@@ -301,7 +301,6 @@ void* alarm_check(void* arg){
                                     if (send(socket_desc, http_message,
                                              strlen(http_message), 0) < 0) {
                                         printf("Send failed");
-                                        return 1;
                                     }
                                     printf("Request send\n");
 
