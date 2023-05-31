@@ -9,10 +9,11 @@
 typedef struct {
         char time[13]; // save year, month, day, hour with concat
         char filename[51];
-        char f_path[256];
         char contents[201];
         char group_user[51];
-        int flag;
+        char category[20];
+        char schedule_check[20];
+        char flag[5];
         int temp;
     } task;
 
@@ -20,11 +21,25 @@ task task_list[30];
 task* read_dir(char*);
 
 int main(){
-    char *path_ptr="./js/";
+    char *path_ptr="./choi";
     task *Task_list; // Task_list receiving task_list from read_dir
     Task_list = read_dir(path_ptr);
     free(Task_list);
     return 0;
+}
+
+int check_file_exists(char* directory_path, char* checkfile) {
+    char file_path[256];
+    strcat(file_path, directory_path);
+    strcat(file_path, checkfile);
+
+    FILE* file = fopen(file_path, "r");
+    if (file) {
+        fclose(file);
+        return 1; // 파일이 존재하는 경우
+    } else {
+        return 0; // 파일이 존재하지 않는 경우
+    }
 }
 
 
@@ -46,59 +61,102 @@ task* read_dir(char* dir_path){
         if(filelist->d_type == DT_REG){
             /* make filepath */
             char filepath[256];
-            strcpy(filepath, dir_path);
-            strcat(filepath, filelist->d_name);
-            printf("%s\n", filepath);
+            memset(filepath, 0, sizeof(filepath));
 
-            if((fd = open(filepath, O_RDONLY)) == -1){ // open file
-                perror("cannot open file");
-                exit(1);
-            }
+            char filetxtname[50];
+            memset(filetxtname, 0, sizeof(filetxtname));
+
+            strcat(filetxtname, filelist->d_name);
+            strcat(filetxtname, ".txt");
+            printf("%s\n", filetxtname);
+            fflush(stdout);
 
             if(strcpy(task_list[i].filename,filelist->d_name) == NULL){ // save filename 
                 perror("save filename error");
                 exit(1);
             }
 
-            if(strcpy(task_list[i].f_path,filepath) == NULL){ // save filepath
-                perror("cannot save filepath");
-                exit(1);
+            if(check_file_exists("./Today/School/", filetxtname) == 1){
+                strcpy(task_list[i].category, "School");
+                strcpy(task_list[i].schedule_check, "Today");
+            }
+            else if(check_file_exists("./Today/Family/", filetxtname) == 1){
+                strcpy(task_list[i].category, "Family");
+                strcpy(task_list[i].schedule_check, "Today");
+            }
+            else if(check_file_exists("./Today/Friend/", filetxtname) == 1){
+                strcpy(task_list[i].category, "Friend");
+                strcpy(task_list[i].schedule_check, "Today");
+            }
+            else if(check_file_exists("./Finished/School/", filetxtname) == 1){
+                strcpy(task_list[i].category, "School");
+                strcpy(task_list[i].schedule_check, "Finished");
+            }
+            else if(check_file_exists("./Finished/Family/", filetxtname) == 1){
+                strcpy(task_list[i].category, "Family");
+                strcpy(task_list[i].schedule_check, "Finished");
+            }
+            else if(check_file_exists("./Finished/Friend/", filetxtname) == 1){
+                strcpy(task_list[i].category, "Friend");
+                strcpy(task_list[i].schedule_check, "Finished");
+            }
+            else if(check_file_exists("./Scheduled/School/", filetxtname) == 1){
+                strcpy(task_list[i].category, "School");
+                strcpy(task_list[i].schedule_check, "Scheduled");
+            }
+            else if(check_file_exists("./Scheduled/Family/", filetxtname) == 1){
+                strcpy(task_list[i].category, "Family");
+                strcpy(task_list[i].schedule_check, "Scheduled");
+            }
+            else{
+                strcpy(task_list[i].category, "Friend");
+                strcpy(task_list[i].schedule_check, "Scheduled");
             }
 
-            if(read(fd, task_list[i].time, 10) == -1){ // first line -> save time
-                perror("save time error");
-                exit(1);
+            printf("%s %s\n", task_list[i].category, task_list[i].schedule_check);
+
+
+            strcpy(filepath, dir_path);
+            strcat(filepath, "/");
+            strcat(filepath, filelist->d_name);
+            
+            FILE* file = fopen(filepath, "r");
+            printf("%s", filelist->d_name);
+            if (file == NULL) {
+                printf("파일을 열 수 없습니다.\n");
+            }
+
+            if (fgets(task_list[i].time, sizeof(task_list[i].time), file) == NULL) {
+                printf("파일을 읽을 수 없습니다.\n");
+                fclose(file);
+            }
+            printf("%s\n", task_list[i].time);
+
+            if (fgets(task_list[i].flag, sizeof(task_list[i].flag), file) == NULL) {
+                printf("파일을 읽을 수 없습니다.\n");
+                fclose(file);
+            }
+            printf("%s\n", task_list[i].flag);
+            if (fgets(task_list[i].group_user, sizeof(task_list[i].group_user), file) == NULL) {
+                printf("파일을 읽을 수 없습니다.\n");
+                fclose(file);
+            }
+            printf("%s\n", task_list[i].group_user);
+
+            char buffer[256];
+            size_t remaining_lines_length = 0;
+            while (fgets(buffer, sizeof(buffer), file) != NULL) {
+                size_t buffer_length = strlen(buffer);
+                if (buffer_length + remaining_lines_length < sizeof(task_list[i].contents)) {
+                    // 버퍼를 remaining_lines에 이어붙임
+                    strcat(task_list[i].contents, buffer);
+                    remaining_lines_length += buffer_length;
+                } else {
+                    break;
+                }
             }
             
-            lseek(fd, 1, SEEK_CUR);
-
-            if(read(fd, &(task_list[i].flag), 1) == -1){ // second line -> save 
-                perror("save flag error");
-                exit(1);
-            }
-
-            if(read(fd, task_list[i].contents, 200) == -1){ // get contents first, will abort fd
-                perror("save contents error");
-                exit(1);
-            }
-
-            lseek(fd, 2, SEEK_CUR);
-
-            temp = fdopen(fd, "r"); // to change int fd to FILE* type
-
-            fgets(task_list[i].group_user, 30, temp); // get line
-            
-            if(i==29){
-                printf("you can only read 30 tasks");
-                exit(1);
-            }
             i++;
-    
-        printf("%d: filename: %s \n", i, task_list[i-1].filename);
-        printf("%d: flag %c \n", i, task_list[i-1].flag);
-        printf("%d: group: %s \n", i, task_list[i-1].group_user);
-        printf("%d: %s \n", i, task_list[i-1].contents);
-        
         }
     }
      
