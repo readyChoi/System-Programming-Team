@@ -29,10 +29,12 @@ int main() {
 
 int check_file_exists(char *directory_path, char *checkfile) {
     char file_path[256];
+    memset(file_path, 0, sizeof(file_path));
     strcat(file_path, directory_path);
     strcat(file_path, checkfile);
 
     FILE *file = fopen(file_path, "r");
+
     if (file) {
         fclose(file);
         return 1; // 파일이 존재하는 경우
@@ -141,13 +143,11 @@ task *read_dir(char *dir_path) {
                 fclose(file);
             }
             printf("%s\n", task_list[i].group_user);
-
             if (fgets(task_list[i].contents, sizeof(task_list[i].contents),
                       file) == NULL) {
                 printf("파일을 읽을 수 없습니다.\n");
                 fclose(file);
             }
-
             i++;
         }
     }
