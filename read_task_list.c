@@ -1,38 +1,38 @@
+#include <dirent.h>
+#include <fcntl.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <dirent.h>
 #include <sys/stat.h>
-#include <fcntl.h>
 #include <unistd.h>
 
 typedef struct {
-        char time[13]; // save year, month, day, hour with concat
-        char filename[51];
-        char contents[201];
-        char group_user[51];
-        char category[20];
-        char schedule_check[20];
-        char flag[5];
-    } task;
+    char time[13]; // save year, month, day, hour with concat
+    char filename[51];
+    char contents[201];
+    char group_user[51];
+    char category[20];
+    char schedule_check[20];
+    char flag[5];
+} task;
 
 task task_list[30];
-task* read_dir(char*);
+task *read_dir(char *);
 
-int main(){
-    char *path_ptr="./choi";
+int main() {
+    char *path_ptr = "./choi";
     task *Task_list; // Task_list receiving task_list from read_dir
     Task_list = read_dir(path_ptr);
     free(Task_list);
     return 0;
 }
 
-int check_file_exists(char* directory_path, char* checkfile) {
+int check_file_exists(char *directory_path, char *checkfile) {
     char file_path[256];
     strcat(file_path, directory_path);
     strcat(file_path, checkfile);
 
-    FILE* file = fopen(file_path, "r");
+    FILE *file = fopen(file_path, "r");
     if (file) {
         fclose(file);
         return 1; // 파일이 존재하는 경우
@@ -41,23 +41,22 @@ int check_file_exists(char* directory_path, char* checkfile) {
     }
 }
 
-
-task* read_dir(char* dir_path){
+task *read_dir(char *dir_path) {
     DIR *dir;
-    task *task_list = malloc(sizeof(task)*30);    
-    FILE* temp;
+    task *task_list = malloc(sizeof(task) * 30);
+    FILE *temp;
     struct dirent *filelist;
     struct stat info;
     int fd;
-    int i=0;
+    int i = 0;
     int grouplen;
 
-    if((dir = opendir(dir_path)) == NULL){ // opendir
+    if ((dir = opendir(dir_path)) == NULL) { // opendir
         perror("cannot open directory");
         exit(1);
     }
-    while((filelist = readdir(dir)) != NULL){ // readdir
-        if(filelist->d_type == DT_REG){
+    while ((filelist = readdir(dir)) != NULL) { // readdir
+        if (filelist->d_type == DT_REG) {
             /* make filepath */
             char filepath[256];
             memset(filepath, 0, sizeof(filepath));
@@ -70,95 +69,89 @@ task* read_dir(char* dir_path){
             printf("%s\n", filetxtname);
             fflush(stdout);
 
-            if(strcpy(task_list[i].filename,filelist->d_name) == NULL){ // save filename 
+            if (strcpy(task_list[i].filename, filelist->d_name) ==
+                NULL) { // save filename
                 perror("save filename error");
                 exit(1);
             }
 
-            if(check_file_exists("./Today/School/", filetxtname) == 1){
+            if (check_file_exists("./Today/School/", filetxtname) == 1) {
                 strcpy(task_list[i].category, "School");
                 strcpy(task_list[i].schedule_check, "Today");
-            }
-            else if(check_file_exists("./Today/Family/", filetxtname) == 1){
+            } else if (check_file_exists("./Today/Family/", filetxtname) == 1) {
                 strcpy(task_list[i].category, "Family");
                 strcpy(task_list[i].schedule_check, "Today");
-            }
-            else if(check_file_exists("./Today/Friend/", filetxtname) == 1){
+            } else if (check_file_exists("./Today/Friend/", filetxtname) == 1) {
                 strcpy(task_list[i].category, "Friend");
                 strcpy(task_list[i].schedule_check, "Today");
-            }
-            else if(check_file_exists("./Finished/School/", filetxtname) == 1){
+            } else if (check_file_exists("./Finished/School/", filetxtname) ==
+                       1) {
                 strcpy(task_list[i].category, "School");
                 strcpy(task_list[i].schedule_check, "Finished");
-            }
-            else if(check_file_exists("./Finished/Family/", filetxtname) == 1){
+            } else if (check_file_exists("./Finished/Family/", filetxtname) ==
+                       1) {
                 strcpy(task_list[i].category, "Family");
                 strcpy(task_list[i].schedule_check, "Finished");
-            }
-            else if(check_file_exists("./Finished/Friend/", filetxtname) == 1){
+            } else if (check_file_exists("./Finished/Friend/", filetxtname) ==
+                       1) {
                 strcpy(task_list[i].category, "Friend");
                 strcpy(task_list[i].schedule_check, "Finished");
-            }
-            else if(check_file_exists("./Scheduled/School/", filetxtname) == 1){
+            } else if (check_file_exists("./Scheduled/School/", filetxtname) ==
+                       1) {
                 strcpy(task_list[i].category, "School");
                 strcpy(task_list[i].schedule_check, "Scheduled");
-            }
-            else if(check_file_exists("./Scheduled/Family/", filetxtname) == 1){
+            } else if (check_file_exists("./Scheduled/Family/", filetxtname) ==
+                       1) {
                 strcpy(task_list[i].category, "Family");
                 strcpy(task_list[i].schedule_check, "Scheduled");
-            }
-            else{
+            } else {
                 strcpy(task_list[i].category, "Friend");
                 strcpy(task_list[i].schedule_check, "Scheduled");
             }
 
-            printf("%s %s\n", task_list[i].category, task_list[i].schedule_check);
-
+            printf("%s %s\n", task_list[i].category,
+                   task_list[i].schedule_check);
 
             strcpy(filepath, dir_path);
             strcat(filepath, "/");
             strcat(filepath, filelist->d_name);
-            
-            FILE* file = fopen(filepath, "r");
+
+            FILE *file = fopen(filepath, "r");
             printf("%s", filelist->d_name);
             if (file == NULL) {
                 printf("파일을 열 수 없습니다.\n");
             }
 
-            if (fgets(task_list[i].time, sizeof(task_list[i].time), file) == NULL) {
+            if (fgets(task_list[i].time, sizeof(task_list[i].time), file) ==
+                NULL) {
                 printf("파일을 읽을 수 없습니다.\n");
                 fclose(file);
             }
             printf("%s\n", task_list[i].time);
 
-            if (fgets(task_list[i].flag, sizeof(task_list[i].flag), file) == NULL) {
+            if (fgets(task_list[i].flag, sizeof(task_list[i].flag), file) ==
+                NULL) {
                 printf("파일을 읽을 수 없습니다.\n");
                 fclose(file);
             }
             printf("%s\n", task_list[i].flag);
-            if (fgets(task_list[i].group_user, sizeof(task_list[i].group_user), file) == NULL) {
+            if (fgets(task_list[i].group_user, sizeof(task_list[i].group_user),
+                      file) == NULL) {
                 printf("파일을 읽을 수 없습니다.\n");
                 fclose(file);
             }
             printf("%s\n", task_list[i].group_user);
 
-            char buffer[256];
-            size_t remaining_lines_length = 0;
-            while (fgets(buffer, sizeof(buffer), file) != NULL) {
-                size_t buffer_length = strlen(buffer);
-                if (buffer_length + remaining_lines_length < sizeof(task_list[i].contents)) {
-                    // 버퍼를 remaining_lines에 이어붙임
-                    strcat(task_list[i].contents, buffer);
-                    remaining_lines_length += buffer_length;
-                } else {
-                    break;
-                }
+            if (fgets(task_list[i].contents, sizeof(task_list[i].contents),
+                      file) == NULL) {
+                printf("파일을 읽을 수 없습니다.\n");
+                fclose(file);
             }
-            
+
             i++;
         }
     }
-     
+
     closedir(dir);
     return task_list;
 }
