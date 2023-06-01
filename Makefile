@@ -1,4 +1,4 @@
-all: admin api_login.so login.so logout.so main.so read_task.so share_task.so
+all: admin api_login.so login.so logout.so main_code.so read_task.so share_task.so
 
 admin: admin_code.c
 	gcc -o admin admin_code.c -w -pthread
@@ -12,8 +12,8 @@ login.so: login_code.c
 logout.so: logout_code.c
 	gcc -shared -o logout.so logout_code.c -fPIC
 
-main.so: main_code.c
-	gcc -shared -o main.so main_code.c -fPIC
+main_code.so: main_code.c
+	gcc -shared -o main_code.so main_code.c -fPIC
 
 read_task.so: read_task_list.c
 	gcc -shared -o read_task.so read_task_list.c -fPIC
