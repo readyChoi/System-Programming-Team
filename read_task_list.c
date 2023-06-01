@@ -14,6 +14,7 @@ typedef struct {
         char category[20];
         char schedule_check[20];
         char flag[5];
+        int temp;
     } task;
 
 task task_list[30];
@@ -29,9 +30,11 @@ int main(){
 
 int check_file_exists(char* directory_path, char* checkfile) {
     char file_path[256];
+    memset(file_path, 0, sizeof(file_path));
     strcat(file_path, directory_path);
     strcat(file_path, checkfile);
 
+    printf("%s\n", file_path);
     FILE* file = fopen(file_path, "r");
     if (file) {
         fclose(file);
@@ -142,18 +145,11 @@ task* read_dir(char* dir_path){
             }
             printf("%s\n", task_list[i].group_user);
 
-            char buffer[256];
-            size_t remaining_lines_length = 0;
-            while (fgets(buffer, sizeof(buffer), file) != NULL) {
-                size_t buffer_length = strlen(buffer);
-                if (buffer_length + remaining_lines_length < sizeof(task_list[i].contents)) {
-                    // 버퍼를 remaining_lines에 이어붙임
-                    strcat(task_list[i].contents, buffer);
-                    remaining_lines_length += buffer_length;
-                } else {
-                    break;
-                }
+            if (fgets(task_list[i].contents, sizeof(task_list[i].contents), file) == NULL) {
+                printf("파일을 읽을 수 없습니다.\n");
+                fclose(file);
             }
+            printf("%s\n", task_list[i].contents);
             
             i++;
         }
